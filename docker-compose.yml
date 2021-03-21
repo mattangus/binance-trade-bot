@@ -2,25 +2,42 @@ version: "3"
 
 services:
   crypto-trading:
-    image: edeng23/binance-trade-bot
+    build: .
     container_name: binance_trader
     volumes:
-      - ./user.cfg:/app/user.cfg
-      - ./data:/app/data
-      - ./logs:/app/logs
+      - .:/app2
     command: python -m binance_trade_bot
+    environment:
+    #   CURRENT_COIN_SYMBOL: BTC
+    #   SUPPORTED_COIN_LIST: "BTC ETH ADA XRP CHZ DOT FIL ENJ LUNA LTC BAT AVAX RVN EOS KAVA MATIC SFP AKRO"
+    #   BRIDGE_SYMBOL: USDT
+    #   API_KEY: Nnpyw7HH535zNTFfYAdij2OhfWpU3zbLCFkN6irRJRJcSawDBC4lfVqVC4UxbJz0
+    #   API_SECRET_KEY: 3HVCDHywMa286Op6U1Ri1xUpBxZ9qcglc3PK2uWmeNr9iwhdvMjF4NCkzSHjIXEm
+    #   SCOUT_MULTIPLIER: 5
+      # SCOUT_SLEEP_TIME: 5
+      PYTHONUNBUFFERED: 1
+    #   TLD: com
 
   api:
-    image: edeng23/binance-trade-bot
+    build: .
     container_name: binance_trader_api
     volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
+      - .:/app2
     ports:
       - 5123:5123
     command: gunicorn binance_trade_bot.api_server:app -k eventlet -w 1 --threads 1 -b 0.0.0.0:5123
     depends_on:
       - crypto-trading
+    environment:
+    #   CURRENT_COIN_SYMBOL:
+    #   SUPPORTED_COIN_LIST: "BTC ETH ADA XRP CHZ DOT FIL ENJ LUNA LTC BAT AVAX RVN EOS KAVA MATIC SFP AKRO"
+    #   BRIDGE_SYMBOL: USDT
+    #   API_KEY: Nnpyw7HH535zNTFfYAdij2OhfWpU3zbLCFkN6irRJRJcSawDBC4lfVqVC4UxbJz0
+    #   API_SECRET_KEY: 3HVCDHywMa286Op6U1Ri1xUpBxZ9qcglc3PK2uWmeNr9iwhdvMjF4NCkzSHjIXEm
+    #   SCOUT_MULTIPLIER: 5
+      # SCOUT_SLEEP_TIME: 5
+      PYTHONUNBUFFERED: 1
+    #   TLD: com
 
   sqlitebrowser:
     image: ghcr.io/linuxserver/sqlitebrowser

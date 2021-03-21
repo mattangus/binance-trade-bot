@@ -116,13 +116,7 @@ class AutoTrader:
         current_coin = self.db.get_current_coin()
         # Display on the console, the current coin+Bridge, so users can see *some* activity and not think the bot has
         # stopped. Not logging though to reduce log size.
-        print(
-            str(datetime.now())
-            + " - CONSOLE - INFO - I am scouting the best trades. Current coin: {} ".format(
-                current_coin + self.config.BRIDGE
-            ),
-            end="\r",
-        )
+        print(f"{str(datetime.now())} - CONSOLE - INFO - scouting for the best trades. Current coin: {current_coin}-{self.config.BRIDGE}")
 
         current_coin_price = self.manager.get_ticker_price(current_coin + self.config.BRIDGE)
 
@@ -143,7 +137,7 @@ class AutoTrader:
                 )
                 continue
 
-            self.db.log_scout(pair, pair.ratio, current_coin_price, optional_coin_price)
+            # self.db.log_scout(pair, pair.ratio, current_coin_price, optional_coin_price)
 
             # Obtain (current coin)/(optional coin)
             coin_opt_coin_ratio = current_coin_price / optional_coin_price
@@ -198,7 +192,7 @@ class AutoTrader:
                 balance = self.manager.get_currency_balance(coin.symbol)
                 if balance == 0:
                     continue
-                usd_value = self.manager.get_ticker_price(coin + "USDT")
+                usd_value = self.manager.get_ticker_price(coin + "BUSD")
                 btc_value = self.manager.get_ticker_price(coin + "BTC")
                 cv = CoinValue(coin, balance, usd_value, btc_value, datetime=now)
                 session.add(cv)

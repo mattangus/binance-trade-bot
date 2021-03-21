@@ -57,6 +57,8 @@ class BinanceAPIManager:
 
         if bnb_balance >= fee_amount_bnb:
             return base_fee * 0.75
+        else:
+            print(f"Not enough BNB for discount. Needed {fee_amount_bnb}.")
         return base_fee
 
     def get_ticker_price(self, ticker_symbol: str):
