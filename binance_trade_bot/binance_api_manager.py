@@ -24,6 +24,7 @@ class BinanceAPIManager:
         self.logger = logger
         self.cache = BinanceCache()
         self.stream_manager = BinanceStreamManager(self.cache, self.binance_client, self.logger)
+        self.non_existent_tickers = set()
 
     @cached(cache=TTLCache(maxsize=1, ttl=43200))
     def get_trade_fees(self) -> Dict[str, float]:
@@ -65,12 +66,16 @@ class BinanceAPIManager:
         """
         Get ticker price of a specific coin
         """
+        if ticker_symbol in self.non_existent_tickers:
+            return None
         price = self.cache.ticker_values.get(ticker_symbol, None)
         if price is None:
             self.cache.ticker_values = {
                 ticker["symbol"]: float(ticker["price"]) for ticker in self.binance_client.get_symbol_ticker()
             }
             price = self.cache.ticker_values.get(ticker_symbol, None)
+            if price is None:
+                self.non_existent_tickers.add(ticker_symbol)
 
         return price
 
