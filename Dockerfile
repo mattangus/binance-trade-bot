@@ -12,9 +12,9 @@ RUN apt-get update && apt-get install -y curl && \
 
 FROM python:3.8-slim
 
-WORKDIR /app
+WORKDIR /app2
 
 COPY --from=builder /install /usr/local
-COPY . .
+# COPY . .
 
 CMD ["python", "-m", "binance_trade_bot"]

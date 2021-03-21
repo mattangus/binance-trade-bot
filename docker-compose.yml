@@ -18,36 +18,36 @@ services:
       PYTHONUNBUFFERED: 1
     #   TLD: com
 
-  api:
-    build: .
-    container_name: binance_trader_api
-    volumes:
-      - .:/app2
-    ports:
-      - 5123:5123
-    command: gunicorn binance_trade_bot.api_server:app -k eventlet -w 1 --threads 1 -b 0.0.0.0:5123
-    depends_on:
-      - crypto-trading
-    environment:
-    #   CURRENT_COIN_SYMBOL:
-    #   SUPPORTED_COIN_LIST: "BTC ETH ADA XRP CHZ DOT FIL ENJ LUNA LTC BAT AVAX RVN EOS KAVA MATIC SFP AKRO"
-    #   BRIDGE_SYMBOL: USDT
-    #   API_KEY: Nnpyw7HH535zNTFfYAdij2OhfWpU3zbLCFkN6irRJRJcSawDBC4lfVqVC4UxbJz0
-    #   API_SECRET_KEY: 3HVCDHywMa286Op6U1Ri1xUpBxZ9qcglc3PK2uWmeNr9iwhdvMjF4NCkzSHjIXEm
-    #   SCOUT_MULTIPLIER: 5
-      # SCOUT_SLEEP_TIME: 5
-      PYTHONUNBUFFERED: 1
-    #   TLD: com
+  # api:
+  #   build: .
+  #   container_name: binance_trader_api
+  #   volumes:
+  #     - .:/app2
+  #   ports:
+  #     - 5123:5123
+  #   command: gunicorn binance_trade_bot.api_server:app -k eventlet -w 1 --threads 1 -b 0.0.0.0:5123
+  #   # depends_on:
+  #   #   - crypto-trading
+  #   environment:
+  #   #   CURRENT_COIN_SYMBOL:
+  #   #   SUPPORTED_COIN_LIST: "BTC ETH ADA XRP CHZ DOT FIL ENJ LUNA LTC BAT AVAX RVN EOS KAVA MATIC SFP AKRO"
+  #   #   BRIDGE_SYMBOL: USDT
+  #   #   API_KEY: Nnpyw7HH535zNTFfYAdij2OhfWpU3zbLCFkN6irRJRJcSawDBC4lfVqVC4UxbJz0
+  #   #   API_SECRET_KEY: 3HVCDHywMa286Op6U1Ri1xUpBxZ9qcglc3PK2uWmeNr9iwhdvMjF4NCkzSHjIXEm
+  #   #   SCOUT_MULTIPLIER: 5
+  #     # SCOUT_SLEEP_TIME: 5
+  #     PYTHONUNBUFFERED: 1
+  #   #   TLD: com
 
-  sqlitebrowser:
-    image: ghcr.io/linuxserver/sqlitebrowser
-    container_name: sqlitebrowser
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Berlin
-    volumes:
-      - ./data/config:/config
-      - ./data:/data
-    ports:
-      - 3000:3000
+  # sqlitebrowser:
+  #   image: ghcr.io/linuxserver/sqlitebrowser
+  #   container_name: sqlitebrowser
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/Berlin
+  #   volumes:
+  #     - ./data/config:/config
+  #     - ./data:/data
+  #   ports:
+  #     - 3000:3000
