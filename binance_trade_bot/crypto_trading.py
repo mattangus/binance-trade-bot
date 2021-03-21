@@ -37,6 +37,5 @@ def main():
     try:
         while True:
             schedule.run_pending()
-            time.sleep(1)
     finally:
         manager.stream_manager.close()
