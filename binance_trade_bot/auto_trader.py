@@ -116,7 +116,7 @@ class AutoTrader:
         current_coin = self.db.get_current_coin()
         # Display on the console, the current coin+Bridge, so users can see *some* activity and not think the bot has
         # stopped. Not logging though to reduce log size.
-        print(f"{str(datetime.now())} - CONSOLE - INFO - scouting for the best trades. Current coin: {current_coin}-{self.config.BRIDGE}")
+        print(f"{str(datetime.now())} - CONSOLE - INFO - scouting for the best trades. Current coin: {current_coin}-{self.config.BRIDGE}", end="")
 
         current_coin_price = self.manager.get_ticker_price(current_coin + self.config.BRIDGE)
 
@@ -156,17 +156,26 @@ class AutoTrader:
 
         # if we have any viable options, pick the one with the biggest ratio
         if ratio_dict_filtered:
+            print()
             best_pair = max(ratio_dict_filtered, key=ratio_dict_filtered.get)
             self.logger.info(f"Will be jumping from {current_coin} to {best_pair.to_coin_id}")
             self.transaction_through_bridge(best_pair)
             self.best_ratios.clear()
 
+        current_best_coin = ""
+        current_best_ratio = -float("inf")
+
         for pair in ratio_dict:
             pair_tuple = (pair.from_coin.symbol, pair.to_coin.symbol)
+            if current_best_ratio < ratio_dict[pair]:
+                current_best_ratio = ratio_dict[pair]
+                current_best_coin = pair.to_coin.symbol
             if pair_tuple in self.best_ratios:
                 self.best_ratios[pair_tuple] = max(self.best_ratios[pair_tuple], ratio_dict[pair])
             else:
                 self.best_ratios[pair_tuple] = ratio_dict[pair]
+        
+        print(f" -- best coin {current_best_coin} ({current_best_ratio*100:0.5f})")
 
     def heartbeat(self):
         if len(self.best_ratios) == 0:
@@ -192,7 +201,7 @@ class AutoTrader:
                 balance = self.manager.get_currency_balance(coin.symbol)
                 if balance == 0:
                     continue
-                usd_value = self.manager.get_ticker_price(coin + "BUSD")
+                usd_value = self.manager.get_ticker_price(coin + "USDT")
                 btc_value = self.manager.get_ticker_price(coin + "BTC")
                 cv = CoinValue(coin, balance, usd_value, btc_value, datetime=now)
                 session.add(cv)

@@ -234,6 +234,8 @@ class Database:
             self.logger.info(".current_coin_table renamed to .current_coin_table.old - " "You can now delete this file")
 
 
+from autologging import traced
+@traced
 class TradeLog:
     def __init__(self, db: Database, from_coin: Coin, to_coin: Coin, selling: bool):
         self.db = db

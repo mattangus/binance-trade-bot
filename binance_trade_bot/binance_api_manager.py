@@ -12,6 +12,7 @@ from .database import Database
 from .logger import Logger
 from .models import Coin
 
+import time
 
 class BinanceAPIManager:
     def __init__(self, config: Config, db: Database, logger: Logger):
@@ -83,13 +84,17 @@ class BinanceAPIManager:
         """
         Get balance of a specific coin
         """
+        print("getting balance")
         balance = self.cache.balances.get(currency_symbol, None)
         if balance is None:
+            print("balance not found")
             self.cache.balances = {
                 currency_balance["asset"]: float(currency_balance["free"])
                 for currency_balance in self.binance_client.get_account()["balances"]
             }
+            print("balances updated")
             balance = self.cache.balances.get(currency_symbol, None)
+            print("got new balance")
 
         return balance
 
@@ -234,9 +239,14 @@ class BinanceAPIManager:
 
         stat = self.wait_for_order(origin_symbol, target_symbol, order["orderId"])
 
+        self.logger.info(f"Got order status. {stat}")
+
         new_balance = self.get_currency_balance(origin_symbol)
+        self.logger.info(f"got new balance. {new_balance} - {origin_balance}")
         while new_balance >= origin_balance:
             new_balance = self.get_currency_balance(origin_symbol)
+            time.sleep(0)
+            
 
         self.logger.info(f"Sold {origin_symbol}")
 

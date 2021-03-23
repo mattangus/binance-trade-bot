@@ -1,4 +1,5 @@
 import logging.handlers
+from autologging import TRACE
 
 from .notifications import NotificationHandler
 
@@ -11,17 +12,17 @@ class Logger:
     def __init__(self, logging_service="crypto_trading"):
         # Logger setup
         self.Logger = logging.getLogger(f"{logging_service}_logger")
-        self.Logger.setLevel(logging.DEBUG)
+        self.Logger.setLevel(TRACE)
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         # default is "logs/crypto_trading.log"
         fh = logging.FileHandler(f"logs/{logging_service}.log")
-        fh.setLevel(logging.DEBUG)
+        fh.setLevel(TRACE)
         fh.setFormatter(formatter)
         self.Logger.addHandler(fh)
 
         # logging to console
         ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(TRACE)
         ch.setFormatter(formatter)
         self.Logger.addHandler(ch)
 
