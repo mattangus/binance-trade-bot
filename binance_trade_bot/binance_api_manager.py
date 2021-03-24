@@ -80,21 +80,17 @@ class BinanceAPIManager:
 
         return price
 
-    def get_currency_balance(self, currency_symbol: str):
+    def get_currency_balance(self, currency_symbol: str, force=False):
         """
         Get balance of a specific coin
         """
-        print("getting balance")
         balance = self.cache.balances.get(currency_symbol, None)
-        if balance is None:
-            print("balance not found")
+        if force or balance is None:
             self.cache.balances = {
                 currency_balance["asset"]: float(currency_balance["free"])
                 for currency_balance in self.binance_client.get_account()["balances"]
             }
-            print("balances updated")
             balance = self.cache.balances.get(currency_symbol, None)
-            print("got new balance")
 
         return balance
 
@@ -168,6 +164,7 @@ class BinanceAPIManager:
         origin_symbol = origin_coin.symbol
         target_symbol = target_coin.symbol
 
+        self.cache.balances.clear()
         origin_balance = self.get_currency_balance(origin_symbol)
         target_balance = self.get_currency_balance(target_symbol)
         from_coin_price = self.get_ticker_price(origin_symbol + target_symbol)
@@ -218,6 +215,7 @@ class BinanceAPIManager:
         origin_symbol = origin_coin.symbol
         target_symbol = target_coin.symbol
 
+        self.cache.balances.clear()
         origin_balance = self.get_currency_balance(origin_symbol)
         target_balance = self.get_currency_balance(target_symbol)
 
@@ -244,9 +242,7 @@ class BinanceAPIManager:
         new_balance = self.get_currency_balance(origin_symbol)
         self.logger.info(f"got new balance. {new_balance} - {origin_balance}")
         while new_balance >= origin_balance:
-            new_balance = self.get_currency_balance(origin_symbol)
-            time.sleep(0)
-            
+            new_balance = self.get_currency_balance(origin_symbol, force=True)
 
         self.logger.info(f"Sold {origin_symbol}")
 

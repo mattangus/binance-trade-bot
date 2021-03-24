@@ -60,7 +60,7 @@ class BinanceStreamManager:
         return None
 
     def _start_ticker_values_socket(self):
-        conn = self.bm.start_ticker_socket(self._process_ticker_values)
+        conn = self.bm.start_miniticker_socket(self._process_ticker_values)
         if conn:
             return conn
         return self.retry(self._start_ticker_values_socket)
