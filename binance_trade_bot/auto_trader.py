@@ -109,7 +109,7 @@ class AutoTrader:
                 self.manager.buy_alt(current_coin, self.config.BRIDGE)
                 self.logger.info("Ready to start trading")
 
-    def update_multiplier(reset=False):
+    def update_multiplier(self, reset=False):
         new_mult = self.config.SCOUT_MULTIPLIER
         if (not reset) and self.scout_multiplier > 1.5:
             new_mult = self.scout_multiplier - 0.5
