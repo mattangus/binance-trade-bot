@@ -19,6 +19,7 @@ class AutoTrader:
         self.logger = logger
         self.config = config
         self.best_ratios: Dict[Tuple[str, str], float] = {}
+        self.scout_multiplier = self.config.SCOUT_MULTIPLIER
 
     def transaction_through_bridge(self, pair: Pair):
         """
@@ -108,6 +109,15 @@ class AutoTrader:
                 self.manager.buy_alt(current_coin, self.config.BRIDGE)
                 self.logger.info("Ready to start trading")
 
+    def update_multiplier(reset=False):
+        new_mult = self.config.SCOUT_MULTIPLIER
+        if (not reset) and self.scout_multiplier > 1.5:
+            new_mult = self.scout_multiplier - 0.5
+        
+        if new_mult != self.scout_multiplier:
+            self.logger.info(f"Updating multiplier, from {self.scout_multiplier}, to {new_mult}")
+        self.scout_multiplier = new_mult
+
     def scout(self):
         """
         Scout for potential jumps from the current coin to another coin
@@ -161,21 +171,22 @@ class AutoTrader:
             self.logger.info(f"Will be jumping from {current_coin} to {best_pair.to_coin_id}")
             self.transaction_through_bridge(best_pair)
             self.best_ratios.clear()
+            self.update_multiplier(reset=True)
+        else:
+            current_best_coin = ""
+            current_best_ratio = -float("inf")
 
-        current_best_coin = ""
-        current_best_ratio = -float("inf")
-
-        for pair in ratio_dict:
-            pair_tuple = (pair.from_coin.symbol, pair.to_coin.symbol)
-            if current_best_ratio < ratio_dict[pair]:
-                current_best_ratio = ratio_dict[pair]
-                current_best_coin = pair.to_coin.symbol
-            if pair_tuple in self.best_ratios:
-                self.best_ratios[pair_tuple] = max(self.best_ratios[pair_tuple], ratio_dict[pair])
-            else:
-                self.best_ratios[pair_tuple] = ratio_dict[pair]
-        
-        print(f" -- best coin {current_best_coin} ({current_best_ratio*100:0.5f})")
+            for pair in ratio_dict:
+                pair_tuple = (pair.from_coin.symbol, pair.to_coin.symbol)
+                if current_best_ratio < ratio_dict[pair]:
+                    current_best_ratio = ratio_dict[pair]
+                    current_best_coin = pair.to_coin.symbol
+                if pair_tuple in self.best_ratios:
+                    self.best_ratios[pair_tuple] = max(self.best_ratios[pair_tuple], ratio_dict[pair])
+                else:
+                    self.best_ratios[pair_tuple] = ratio_dict[pair]
+            
+            print(f" -- best coin {current_best_coin} ({current_best_ratio*100:0.5f})")
 
     def heartbeat(self):
         if len(self.best_ratios) == 0:
